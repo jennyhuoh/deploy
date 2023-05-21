@@ -10,7 +10,7 @@ services:
      - "443:443"
     volumes:
       - ./nginx/default.conf:/etc/nginx/sites-available/default
-      - /var/certs/etc-letsencrypt:/etc/letsencrypt
+      - ./certs/etc-letsencrypt:/etc/letsencrypt
     depends_on:
       - api
     environment:
