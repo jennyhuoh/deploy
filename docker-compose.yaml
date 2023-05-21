@@ -1,28 +1,27 @@
 version: '3.8'
 
 services:
-  nginx:
-    depends_on:
-      - client
-      - api
-    restart: always
-    build:
-      dockerfile: Dockerfile
-      context: ./nginx
-    ports:
-     - "3050:80"
   client:
-    stdin_open: true
     build:
       dockerfile: Dockerfile
       context: ./master_frontend
+    ports:
+     - "80:80"
+     - "443:443"
     volumes:
-     - /app/node_modules
-     - ./master_frontend:/app
+      - ./nginx/default.conf:/etc/nginx/sites-available/default
+      - /var/certs/etc-letsencrypt:/etc/letsencrypt
+    depends_on:
+      - api
+    environment:
+      - CHOKIDAR_USEPOLLING=true
   api:
     build:
       dockerfile: Dockerfile
-      context: "./node-postgres"
+      context: ./node-postgres
+    ports:
+     - '8000:8000'
+    restart: always
     volumes:
-      - /app/node_modules
-      - ./node_postgres:/app
+      - ./node_postgres:/node_postgres
+      - /node_postgres/node_modules
